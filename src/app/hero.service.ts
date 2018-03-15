@@ -9,6 +9,9 @@ import { MessageService } from './message.service';
 
 import { catchError, map, tap } from 'rxjs/operators';
 
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable()
 export class HeroService {
@@ -17,7 +20,7 @@ export class HeroService {
     private http: HttpClient,
     private messageService: MessageService) { }
   
-  // Get heroes from the server
+  // GET heroes from the server
   getHeroes(): Observable<Hero[]> {
     // Todo: send the message _after_ fetching the heroes
     // this.messageService.add('HeroService: fetched heroes');
@@ -43,6 +46,15 @@ export class HeroService {
 
   private heroesUrl = 'api/heroes'; // URL to web api
 
+
+  // PUT update the hero on the server
+  updateHero (hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHero'))
+    )
+  }
+  
   /**
    * Handle Http operation that failed.
    * Let the app continue.
